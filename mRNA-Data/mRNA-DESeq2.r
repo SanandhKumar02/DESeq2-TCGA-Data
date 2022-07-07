@@ -80,3 +80,34 @@ mrna_res <- results(mrna_dds, name = "Condition_Tumor_vs_Normal")
 
 plotMA(mrna_res)
 
+# Summing Up
+
+mrna_res_df <- as.data.frame(mrna_res)
+mrnaTable <- mrna_res_df
+mrnaTable$Gene_id <- rownames(mrnaTable)
+summary(mrna_res)
+mrna_upreg <- get_upregulated(mrna_res)
+mrna_downreg <- get_downregulated(mrna_res)
+mrna_counts <- counts(mrna_dds, normalized = T)
+mrna_upreg$Gene_id <- rownames(mrna_upreg)
+mrna_downreg$Gene_id <- rownames(mrna_downreg)
+mrna_res_df$Gene_id <- rownames(mrna_res_df)
+
+#txt Format
+
+write.table(mrna_counts, "/content/Results/mRNA_norm.counts.txt", quote = F, sep = "\t")
+write.table(mrna_res_df, "/content/Results/mrna_res_deseq2.txt", quote = F, sep = "\t")
+write.table(mrna_upreg, "/content/Results/mRNA_upreg.txt", quote = F, sep = "\t", row.names = F)
+write.table(mrna_downreg, "/content/Results/mRNA_downreg.txt", quote = F, sep = "\t", row.names = F)
+
+#CSV Format
+
+write.csv(as.data.frame(mrna_upreg), file="mrna_upreg.csv")
+write.csv(as.data.frame(mrna_downreg), file="mrna_downreg.csv")
+write.csv(as.data.frame(mrna_counts), file="mrna_counts.csv")
+write.csv(as.data.frame(mrna_res_df), file="mrna_res_df.csv")
+
+# Volcano Plot
+
+EnhancedVolcano(mrna_res_df, x="log2FoldChange", y="padj", lab = mrna_res_df$Gene_id)
+
