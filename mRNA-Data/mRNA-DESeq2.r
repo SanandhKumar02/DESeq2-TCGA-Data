@@ -63,3 +63,20 @@ mrna_meta[,2] <- gsub("Solid Tissue Normal", "Normal", mrna_meta[,2])
 mrna_meta[,2] <- as.factor(mrna_meta[,2])
 levels(mrna_meta[,2])
 colnames(mrna_meta) <- c("cases", "Condition")
+
+# DESeq2 Analysis
+
+mrna_dds <- DESeqDataSetFromMatrix(round(mrna_df), colData = mrna_meta, design = ~ Condition)
+mrna_dds$Condition <- relevel(mrna_dds$Condition, ref = "Normal")
+mrna_dds <- DESeq(mrna_dds)
+vsd <- varianceStabilizingTransformation(mrna_dds, blind=FALSE)
+
+# Dispersions Plot
+
+plotDispEsts(mrna_dds, main="Dispersion plot")
+mrna_res <- results(mrna_dds, name = "Condition_Tumor_vs_Normal")
+
+# MA Plot
+
+plotMA(mrna_res)
+
